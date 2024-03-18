@@ -6,7 +6,14 @@ date: '2024-03-01'
 
 Use this notebook to quickly write the methods for the week:
 
-
+### Methods:
+Sample files were downloaded from the accession link, in .fastq format. 
+Then we did basic quality control with FASTQC, running on each in turn.
+Once the quality was deemed satisfactory, trimmomatic was run to remove
+low-quality score subsequences and the adapter RNA sequences from the 
+sample files.
+An index was made from the gencode Human primary assembly genome "GRCh38" 
+using bowtie2 v2.5.3 with default options. 
 
 
 
