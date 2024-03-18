@@ -6,6 +6,7 @@ REPS = set(sample_csv['replicate'].tolist())
 
 rule all:
 	input:
+		expand('{condition}_{rep}', condition = CONDITIONS, rep = REPS) 
 
 rule wget_files:
 	output:
