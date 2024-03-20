@@ -10,7 +10,12 @@ rule all:
 		expand('results/{condition}_{rep}_fastqc.html',
 		 condition = CONDITIONS,
 		 rep = REPS
-		)
+		),
+		expand('samples/{condition}_{rep}.trimmed.fq.gz',
+		 condition = CONDITIONS, 
+		 rep = REPS
+		) 
+
 		
 
 rule wget_files:
@@ -39,14 +44,20 @@ rule fastqc:
 		fastqc {input} -o {params.outdir}
 		'''
 
-#rule trimomatic:
-#	input:
-#	output:
-#	threads: 8
-#	conda:
-#		'envs/trimmomatic_env.yml'
-#	shell:
-#		''
+rule trimomatic:
+	input:
+		'samples/{condition}_{rep}.fastq.gz'
+	output:
+		'samples/{condition}_{rep}.trimmed.fq.gz'
+	threads: 8
+	params:
+		adapters = 'results/TruSeq-SE.fa'
+	conda:
+		'envs/trimmomatic_env.yml'
+	shell:
+		'''
+		trimmomatic SE -phred33 {input} {output} ILLUMINACLIP:{params.adapters}:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15
+		'''
 
 #rule bowtie2_build_gencode:
 #	input:
