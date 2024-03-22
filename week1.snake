@@ -4,6 +4,8 @@ sample_csv = pandas.read_csv('sample_sheet.csv', index_col='name')
 CONDITIONS = set(sample_csv['condition'].tolist())
 REPS = set(sample_csv['replicate'].tolist())
 
+gencode_reference = 'GRCh38.chr21' # prefix of genome fa filename
+
 rule all:
 	input:
 		# expand('samples/{condition}_{rep}.fastq.gz', condition = CONDITIONS, rep = REPS) 
@@ -14,7 +16,11 @@ rule all:
 		expand('samples/{condition}_{rep}.trimmed.fq.gz',
 		 condition = CONDITIONS, 
 		 rep = REPS
-		) 
+		),
+		expand('results/bt2_index/chr21/{gencode_reference}.{number}.bt2', 
+		gencode_reference = gencode_reference,
+		number = [1, 2, 3, 4, 'rev.1', 'rev.2']
+		)
 
 		
 
@@ -59,12 +65,26 @@ rule trimomatic:
 		trimmomatic SE -phred33 {input} {output} ILLUMINACLIP:{params.adapters}:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15
 		'''
 
-#rule bowtie2_build_gencode:
-#	input:
-#	output:
-#	params:
-#	threads: 16
-#	conda:
-#		'envs/bowtie2_env.yml'
-#	shell:
-#		''
+rule bowtie2_build_gencode:
+	input:
+		fa='results/{}.fa.gz'.format(gencode_reference)
+	output:
+		bt2='results/bt2_index/chr21/{gencode}.{number}.bt2'
+	params:
+		index_dir = 'results/bt2_index/chr21/'
+	threads: 16
+	conda:
+		'envs/bowtie2_env.yml'
+	shell:
+		'''
+		# create a dir for the index if doesn't exist
+		if [[ ! -e $dir ]]; then
+
+    			mkdir -p $dir
+
+		fi
+		# build index with defaults
+		bowtie2-build -f {input.fa} {params.index_dir}{gencode_reference}
+
+		echo 'Bowtie2 Index Built, Jobs Done'	
+		'''
