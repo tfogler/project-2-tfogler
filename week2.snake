@@ -8,7 +8,9 @@ rule all:
 	input:
 		expand('results/{condition}_{rep}.bam', condition = CONDITIONS, rep = REPS),
 	
-		expand('results/{condition}_{rep}.sorted.bam', condition = CONDITIONS, rep = REPS )
+		expand('results/{condition}_{rep}.sorted.bam', condition = CONDITIONS, rep = REPS ),
+		
+		expand('results/{condition}_{rep}.index', condition = CONDITIONS, rep = REPS )
 
 rule bowtie2_align:
 	input:
@@ -32,18 +34,23 @@ rule samtools_sort:
 		'results/{condition}_{rep}.sorted.bam'
 	conda:
 		'envs/samtools_env.yml'
+
 	shell:
 		'''
 		samtools sort {input} -o {output}
 		'''
+rule samtools_index:
+	input:
+		'results/{condition}_{rep}.sorted.bam'
+	output:
+		'results/{condition}_{rep}.index'
+	conda:
+		'envs/samtools_env.yml'
+	shell:
+		'''
+		samtools index -M {input} -o {output}
+		'''
 
-#rule samtools_idx:
-#	input:
-#	output:
-#	conda:
-#		'envs/samtools_env.yml'
-#	shell:
-#
 #rule multiqc:
 #	input:
 #	output:
