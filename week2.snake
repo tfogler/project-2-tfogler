@@ -6,9 +6,9 @@ REPS = set(sample_csv['replicate'].tolist())
 
 rule all:
 	input:
-		expand('results/{condition}_{rep}.bam', condition = CONDITIONS, rep = REPS)
+		expand('results/{condition}_{rep}.bam', condition = CONDITIONS, rep = REPS),
 	
-		# expand('{condition}_{rep}.sorted.bam', condition = CONDITIONS, rep = REPS )
+		expand('results/{condition}_{rep}.sorted.bam', condition = CONDITIONS, rep = REPS )
 
 rule bowtie2_align:
 	input:
@@ -16,7 +16,7 @@ rule bowtie2_align:
 	output:
 		'results/{condition}_{rep}.bam'
 	threads: 16
-	params:
+	# params:
 	conda:
 		'envs/bowtie2_env.yml'
 	shell:
@@ -25,12 +25,18 @@ rule bowtie2_align:
 		samtools view -b > {output}
 		'''
 
-#rule samtools_sort:
-#	input:
-#	output:
-#		'envs/samtools_env.yml'
-#	shell:
-#
+rule samtools_sort:
+	input:
+		'results/{condition}_{rep}.bam'
+	output:
+		'results/{condition}_{rep}.sorted.bam'
+	conda:
+		'envs/samtools_env.yml'
+	shell:
+		'''
+		samtools sort {input} -o {output}
+		'''
+
 #rule samtools_idx:
 #	input:
 #	output:
