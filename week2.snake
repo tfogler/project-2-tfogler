@@ -10,7 +10,11 @@ rule all:
 	
 		expand('results/{condition}_{rep}.sorted.bam', condition = CONDITIONS, rep = REPS ),
 		
-		expand('results/{condition}_{rep}.index', condition = CONDITIONS, rep = REPS )
+		expand('results/{condition}_{rep}.index', condition = CONDITIONS, rep = REPS ),
+		
+		expand('results/{condition}_{rep}_flagstats.txt', condition = CONDITIONS, rep = REPS),
+		
+		"results/multiqc_report.html"
 
 rule bowtie2_align:
 	input:
@@ -38,7 +42,9 @@ rule samtools_sort:
 	shell:
 		'''
 		samtools sort {input} -o {output}
+		rm {input}
 		'''
+
 rule samtools_index:
 	input:
 		'results/{condition}_{rep}.sorted.bam'
@@ -46,19 +52,43 @@ rule samtools_index:
 		'results/{condition}_{rep}.index'
 	conda:
 		'envs/samtools_env.yml'
+	threads:
+		4
 	shell:
 		'''
 		samtools index -M {input} -o {output}
 		'''
 
-#rule multiqc:
-#	input:
-#	output:
-#	params:
-#	conda:
-#		'envs/multiqc_env.yml'
-#	shell:
-#
+rule samtools_flagstats:
+	input:
+		'results/{condition}_{rep}.sorted.bam'
+		
+	output:
+		'results/{condition}_{rep}_flagstats.txt'
+
+	conda:
+	        'envs/samtools_env.yml'
+
+	shell:
+		'''
+		samtools flagstat {input} -O default > {output}
+		'''
+
+rule multiqc:
+	input:
+		sorted_bams = expand('results/{condition}_{rep}.sorted.bam', condition = CONDITIONS, rep = REPS),
+		indices = expand('results/{condition}_{rep}.index', condition = CONDITIONS, rep = REPS ),
+	output:
+		report = 'results/multiqc_report.html'
+	params:
+		dir = 'results/'
+	conda:
+		'envs/multiqc_env.yml'
+	shell:
+		'''
+		multiqc {params.dir}
+		'''
+
 #rule bamCoverage:
 #	input:
 #	output:
