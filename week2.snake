@@ -6,9 +6,9 @@ REPS = set(sample_csv['replicate'].tolist())
 
 rule all:
 	input:
-		expand('results/{condition}_{rep}.bam', condition = CONDITIONS, rep = REPS),
+		expand('results/{condition}_{rep}.sorted.bam', condition = CONDITIONS, rep = REPS),
 	
-		expand('results/{condition}_{rep}.sorted.bam', condition = CONDITIONS, rep = REPS ),
+		# expand('results/{condition}_{rep}.bam', condition = CONDITIONS, rep = REPS ),
 		
 		expand('results/{condition}_{rep}.index', condition = CONDITIONS, rep = REPS ),
 		
@@ -86,7 +86,7 @@ rule multiqc:
 		'envs/multiqc_env.yml'
 	shell:
 		'''
-		multiqc {params.dir}
+		multiqc {params.dir} --outdir={params.dir}
 		'''
 
 #rule bamCoverage:
