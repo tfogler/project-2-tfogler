@@ -86,7 +86,7 @@ rule multiqc:
 		'envs/multiqc_env.yml'
 	shell:
 		'''
-		multiqc {params.dir} --outdir={params.dir}
+		multiqc -f {params.dir} --outdir {params.dir}
 		'''
 
 #rule bamCoverage:
