@@ -16,7 +16,9 @@ rule all:
 		
 		expand('results/{condition}_{rep}.bw', condition = CONDITIONS, rep = REPS),
 
-		"results/multiqc_report.html"
+		"results/multiqc_report.html",
+
+		"results/multibwsummary.npz"
 
 rule bowtie2_align:
 	input:
@@ -107,18 +109,25 @@ rule bamCoverage:
 
 rule multiBwSummary:
 	input:
-		
+		bigwig = expand('results/{condition}_{rep}.bw', condition = CONDITIONS, rep = REPS),
 	output:
+		multiBwSummary = 'results/multibwsummary.npz'
 	conda:
 		'envs/deeptools_env.yml'
 	shell:
 		'''
+		multiBwSummary bins -b {input.bigwig} -o {output.multiBwSummary}
 		'''
 
-#rule plotCorrelation:
-#	input:
-#	output:
-#	params:
-#	conda:
-#		'envs/deeptools_env.yml'
-#	shell:
+rule plotCorrelation:
+	input:
+		multiBwSummary = 'results/multibwsummary.npz'
+	output:
+		plot = 'results/bwplot.png'
+	params:
+	conda:
+		'envs/deeptools_env.yml'
+	shell:
+		'''
+		plotCorrelation -in {input.multiBwSummary} -c pearson -p heatmap -o {output.plot} --plotnumbers
+		'''
