@@ -114,11 +114,12 @@ rule multiBwSummary:
 		bigwig = expand('results/{condition}_{rep}.bw', condition = CONDITIONS, rep = REPS),
 	output:
 		multiBwSummary = 'results/multibwsummary.npz'
+	threads: 1
 	conda:
 		'envs/deeptools_env.yml'
 	shell:
 		'''
-		multiBwSummary bins -b {input.bigwig} -o {output.multiBwSummary}
+		multiBigwigSummary bins -b {input.bigwig} -o {output.multiBwSummary}
 		'''
 
 rule plotCorrelation:
