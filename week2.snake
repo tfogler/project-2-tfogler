@@ -10,10 +10,12 @@ rule all:
 	
 		# expand('results/{condition}_{rep}.bam', condition = CONDITIONS, rep = REPS ),
 		
-		expand('results/{condition}_{rep}.index', condition = CONDITIONS, rep = REPS ),
+		expand('results/{condition}_{rep}.bai', condition = CONDITIONS, rep = REPS ),
 		
 		expand('results/{condition}_{rep}_flagstats.txt', condition = CONDITIONS, rep = REPS),
 		
+#		expand('results/{condition}_{rep}.bigwig', condition = CONDITIONS, rep = REPS),
+
 		"results/multiqc_report.html"
 
 rule bowtie2_align:
@@ -49,7 +51,7 @@ rule samtools_index:
 	input:
 		'results/{condition}_{rep}.sorted.bam'
 	output:
-		'results/{condition}_{rep}.index'
+		'results/{condition}_{rep}.bai'
 	conda:
 		'envs/samtools_env.yml'
 	threads:
@@ -77,7 +79,7 @@ rule samtools_flagstats:
 rule multiqc:
 	input:
 		sorted_bams = expand('results/{condition}_{rep}.sorted.bam', condition = CONDITIONS, rep = REPS),
-		indices = expand('results/{condition}_{rep}.index', condition = CONDITIONS, rep = REPS ),
+		indices = expand('results/{condition}_{rep}.bai', condition = CONDITIONS, rep = REPS ),
 	output:
 		report = 'results/multiqc_report.html'
 	params:
@@ -91,12 +93,18 @@ rule multiqc:
 
 #rule bamCoverage:
 #	input:
+#		sorted_bams = 'results/{condition}_{rep}.sorted.bam',
+#		indices = 'results/{condition}_{rep}.bai'
 #	output:
+#		'results/{condition}_{rep}.bigwig'
 #	threads: 4
 #	conda:
 #		'envs/deeptools_env.yml'
 #	shell:
-#
+#		'''
+#		bamCoverage -b {input.sorted_bams} --outFileName {output} --outFileFormat bigwig
+#		'''
+
 #rule multiBwSummary:
 #	input:
 #	output:
