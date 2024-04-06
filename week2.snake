@@ -18,7 +18,9 @@ rule all:
 
 		"results/multiqc_report.html",
 
-		"results/multibwsummary.npz"
+		"results/multibwsummary.npz",
+		
+		"results/bwplot.png"
 
 rule bowtie2_align:
 	input:
