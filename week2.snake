@@ -132,5 +132,5 @@ rule plotCorrelation:
 		'envs/deeptools_env.yml'
 	shell:
 		'''
-		plotCorrelation -in {input.multiBwSummary} -c pearson -p heatmap -o {output.plot} --plotnumbers
+		plotCorrelation -in {input.multiBwSummary} -c pearson -p heatmap -o {output.plot} --plotNumbers
 		'''
