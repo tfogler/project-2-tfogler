@@ -6,13 +6,14 @@ REPS = set(sample_csv['replicate'].tolist())
 
 rule all:
 	input:
-		directory(expand('results/{condition}_{rep}_tag_dir', condition = CONDITIONS, rep = REPS))
+		(expand('results/{condition}_{rep}_tags', condition = CONDITIONS, rep = REPS)),
+		expand('results/RUNX1_{rep}_peaks.txt', rep = REPS)
 
 rule make_tag_dir:
 	input:
 		bam = "results/{condition}_{rep}.sorted.bam"
 	output:
-		tag_dir = directory("results/{condition}_{rep}_tag_dir")
+		tag_dir = directory("results/{condition}_{rep}_tags")
 	params:
 	threads: 4
 	conda:
@@ -22,19 +23,31 @@ rule make_tag_dir:
 		makeTagDirectory {output.tag_dir} {input.bam}
 		'''
 
-#rule findPeaks:
-#	input:
-#	output:
-#	conda:
-#		'envs/homer_env.yml'
-#	shell:
+rule findPeaks:
+	input:
+		runx1_dir = 'results/RUNX1sample_{rep}_tags',
+		input_dir = 'results/INPsample_{rep}_tags'
+	output:
+		auto = 'results/RUNX1_{rep}_peaks.txt'
+	params: size = '-size 200'
+	threads: 2
+	conda:
+		'envs/homer_env.yml'
+	shell:
+		'''
+#		mkdir -p {input.runx1_dir}
+		findPeaks {input.runx1_dir} -style factor -o {output.auto} {params.size} -i {input.input_dir}
+		'''
 
-#rule convertPeakFiles:
-#	input:
-#	output:
-#	conda:
-#		'envs/homer_env.yml'
-#	shell:
+rule convertPeakFiles:
+	input:
+		expand('results/RUNX1_{rep}_peaks.txt', rep = REPS)
+	output:
+	conda:
+		'envs/homer_env.yml'
+	shell:
+		'''
+		'''
 
 #rule intersect_peaks:
 #	input:
