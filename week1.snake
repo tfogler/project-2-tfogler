@@ -17,8 +17,8 @@ rule all:
 		 condition = CONDITIONS, 
 		 rep = REPS
 		),
-		expand('results/bt2_index/primary_assembly_genome/{gencode_reference}.{number}.bt2', 
-		gencode_reference = gencode_reference,
+		expand('results/bt2_index/primary_assembly_genome/GRCh38.{number}.bt2', 
+		# gencode_reference = gencode_reference,
 		number = [1, 2, 3, 4, 'rev.1', 'rev.2']
 		)
 
@@ -69,7 +69,7 @@ rule bowtie2_build_gencode:
 	input:
 		fa='results/{}.fa.gz'.format(gencode_reference)
 	output:
-		bt2='results/bt2_index/primary_assembly_genome/{gencode}.{number}.bt2'
+		bt2='results/bt2_index/primary_assembly_genome/GRCh38.{number}.bt2'
 	params:
 		index_dir = 'results/bt2_index/primary_assembly_genome/'
 	threads: 16
@@ -87,7 +87,7 @@ rule bowtie2_build_gencode:
 		fi
 		
 		# build index with defaults
-		bowtie2-build -f {input.fa} {params.index_dir}{gencode_reference}
+		bowtie2-build -f {input.fa} {params.index_dir}GRCh38
 
 		echo 'Bowtie2 Index Built, Jobs Done'	
 		'''
