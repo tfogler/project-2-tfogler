@@ -78,11 +78,14 @@ rule bowtie2_build_gencode:
 	shell:
 		'''
 		# create a dir for the index if doesn't exist
+		dir={params.index_dir}
+
 		if [[ ! -e $dir ]]; then
 
     			mkdir -p $dir
 
 		fi
+		
 		# build index with defaults
 		bowtie2-build -f {input.fa} {params.index_dir}{gencode_reference}
 
