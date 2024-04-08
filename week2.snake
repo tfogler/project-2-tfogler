@@ -28,12 +28,12 @@ rule bowtie2_align:
 	output:
 		'results/{condition}_{rep}.bam'
 	threads: 16
-	# params:
+	params:
 	conda:
 		'envs/bowtie2_env.yml'
 	shell:
 		'''
-		bowtie2 -x results/bt2_index/chr21/GRCh38.chr21 -U {input} | 
+		bowtie2 -x results/bt2_index/primary_assembly_genome/GRCh38.primary_assembly.genome -U {input} | 
 		samtools view -b > {output}
 		'''
 

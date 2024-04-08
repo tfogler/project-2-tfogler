@@ -4,7 +4,7 @@ sample_csv = pandas.read_csv('sample_sheet.csv', index_col='name')
 CONDITIONS = set(sample_csv['condition'].tolist())
 REPS = set(sample_csv['replicate'].tolist())
 
-gencode_reference = 'GRCh38.chr21' # prefix of genome fa filename
+gencode_reference = 'GRCh38.primary_assembly.genome' # prefix of genome fa filename
 
 rule all:
 	input:
@@ -17,7 +17,7 @@ rule all:
 		 condition = CONDITIONS, 
 		 rep = REPS
 		),
-		expand('results/bt2_index/chr21/{gencode_reference}.{number}.bt2', 
+		expand('results/bt2_index/primary_assembly_genome/{gencode_reference}.{number}.bt2', 
 		gencode_reference = gencode_reference,
 		number = [1, 2, 3, 4, 'rev.1', 'rev.2']
 		)
@@ -69,9 +69,9 @@ rule bowtie2_build_gencode:
 	input:
 		fa='results/{}.fa.gz'.format(gencode_reference)
 	output:
-		bt2='results/bt2_index/chr21/{gencode}.{number}.bt2'
+		bt2='results/bt2_index/primary_assembly_genome/{gencode}.{number}.bt2'
 	params:
-		index_dir = 'results/bt2_index/chr21/'
+		index_dir = 'results/bt2_index/primary_assembly_genome/'
 	threads: 16
 	conda:
 		'envs/bowtie2_env.yml'
