@@ -41,7 +41,7 @@ rule fastqc:
 	output:
 		'results/{condition}_{rep}_fastqc.html'
 	params:
-		outdir = '/projectnb/bf528/students/tfogler/project-2-tfogler/results'
+		outdir = 'results'
 	threads: 4
 	conda:
 		'envs/fastqc_env.yml'
