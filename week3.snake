@@ -41,12 +41,14 @@ rule findPeaks:
 
 rule convertPeakFiles:
 	input:
-		expand('results/RUNX1_{rep}_peaks.txt', rep = REPS)
+		'results/RUNX1_{rep}_peaks.txt'
 	output:
+		'results/RUNX1_{rep}_peaks.bed'
 	conda:
 		'envs/homer_env.yml'
 	shell:
 		'''
+		pos2bed.pl {input} > {output}
 		'''
 
 #rule intersect_peaks:
