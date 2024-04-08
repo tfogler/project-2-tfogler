@@ -17,10 +17,11 @@ rule all:
 		 condition = CONDITIONS, 
 		 rep = REPS
 		),
-		expand('results/bt2_index/primary_assembly_genome/GRCh38.{number}.bt2', 
+		'results/bt2_index/primary_assembly_genome/GRCh38.1.bt2'
+		# expand('results/bt2_index/primary_assembly_genome/GRCh38.{number}.bt2', 
 		# gencode_reference = gencode_reference,
-		number = [1, 2, 3, 4, 'rev.1', 'rev.2']
-		)
+		# number = [1, 2, 3, 4, 'rev.1', 'rev.2']
+		# )
 
 		
 
@@ -69,7 +70,7 @@ rule bowtie2_build_gencode:
 	input:
 		fa='results/{}.fa.gz'.format(gencode_reference)
 	output:
-		bt2='results/bt2_index/primary_assembly_genome/GRCh38.{number}.bt2'
+		bt2='results/bt2_index/primary_assembly_genome/GRCh38.1.bt2'
 	params:
 		index_dir = 'results/bt2_index/primary_assembly_genome/'
 	threads: 16
