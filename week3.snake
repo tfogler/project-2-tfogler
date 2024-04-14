@@ -8,7 +8,9 @@ rule all:
 	input:
 		(expand('results/{condition}_{rep}_tags', condition = CONDITIONS, rep = REPS)),
 		# expand('results/RUNX1_{rep}_peaks.txt', rep = REPS),
-		expand('results/RUNX1sample_{rep}_peaks.bed', rep = REPS)
+		expand('results/RUNX1sample_{rep}_peaks.bed', rep = REPS),
+		# 'results/RUNX1_intersected_peaks.bed',
+		'results/RUNX1_intersected_peaks.filtered.bed'
 
 rule make_tag_dir:
 	input:
@@ -54,8 +56,8 @@ rule convertPeakFiles:
 
 rule intersect_peaks:
 	input:
-		rep_un = 'results/RUNX1_rep1_peaks.bed',
-		rep_du ='results/RUNX1_rep2_peaks.bed'
+		rep_un = 'results/RUNX1sample_rep1_peaks.bed',
+		rep_du ='results/RUNX1sample_rep2_peaks.bed'
 	output:
 		'results/RUNX1_intersected_peaks.bed'
 	params:
@@ -70,9 +72,9 @@ rule intersect_peaks:
 rule filter_blacklist:
 	input:
 		peaks_bed = 'results/RUNX1_intersected_peaks.bed',
-		blacklist = 'results/hg380blacklist.v2.bed'
+		blacklist = 'results/hg38-blacklist.v2.bed'
 	output:
-		filtered = 'results/RUNX1_filtered_intersected_peaks.bed'
+		filtered = 'results/RUNX1_intersected_peaks.filtered.bed'
 	conda:
 		'envs/bedtools_env.yml'
 	shell:
@@ -80,10 +82,12 @@ rule filter_blacklist:
 		bedtools intersect -a {input.peaks_bed} -b {input.blacklist} -v > {output.filtered}
 		'''
 
-#rule unzip_gtf:
-#	input:
-#	output:
-#	shell:
+rule unzip_gtf:
+	input:
+	output:
+	shell:
+		'''
+		'''
 
 #rule annotate_peaks:
 #	input:
