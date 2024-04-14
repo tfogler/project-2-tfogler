@@ -10,7 +10,8 @@ rule all:
 		# expand('results/RUNX1_{rep}_peaks.txt', rep = REPS),
 		expand('results/RUNX1sample_{rep}_peaks.bed', rep = REPS),
 		# 'results/RUNX1_intersected_peaks.bed',
-		'results/RUNX1_intersected_peaks.filtered.bed'
+		'results/RUNX1_intersected_peaks.filtered.bed',
+		'results/RUNX1_intersected_peaks_annotated.tsv'
 
 rule make_tag_dir:
 	input:
@@ -61,12 +62,12 @@ rule intersect_peaks:
 	output:
 		'results/RUNX1_intersected_peaks.bed'
 	params:
-		option = ''
+		option = '-a'
 	conda:
 		'envs/bedtools_env.yml'
 	shell:
 		'''
-		bedtools intersect {params.option} rep_un rep_du > {output}
+		bedtools intersect {params.option} {input.rep_un} -b {input.rep_du} > {output}
 		'''
 
 rule filter_blacklist:
@@ -84,17 +85,25 @@ rule filter_blacklist:
 
 rule unzip_gtf:
 	input:
+		'results/gencode.v45.primary_assembly.annotation.gtf.gz'
 	output:
+		'results/gencode.v45.primary_assembly.annotation.gtf'
 	shell:
 		'''
+		gunzip {input}
 		'''
 
-#rule annotate_peaks:
-#	input:
-#	output:
-#	conda:
-#		'envs/homer_env.yml'
-#	shell:
+rule annotate_peaks:
+	input:
+		'results/{sample}.filtered.bed'
+	output:
+		'results/{sample}_annotated.tsv'
+	conda:
+		'envs/homer_env.yml'
+	shell:
+		'''
+		annotatePeaks.pl {input} hg38 > {output}
+		'''
 
 #rule unzip_genome:
 #	input:
