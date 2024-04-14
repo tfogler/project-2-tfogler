@@ -95,14 +95,15 @@ rule unzip_gtf:
 
 rule annotate_peaks:
 	input:
-		'results/{sample}.filtered.bed'
+		bedfile = 'results/{sample}.filtered.bed',
+		gencode = 'results/gencode.v45.primary_assembly.annotation.gtf'
 	output:
 		'results/{sample}_annotated.tsv'
 	conda:
 		'envs/homer_env.yml'
 	shell:
 		'''
-		annotatePeaks.pl {input} hg38 > {output}
+		annotatePeaks.pl {input.bedfile} hg38 -gtf {input.gencode} > {output}
 		'''
 
 #rule unzip_genome:
