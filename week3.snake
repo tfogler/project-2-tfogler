@@ -3,15 +3,18 @@ import pandas
 sample_csv = pandas.read_csv('sample_sheet.csv', index_col='name')
 CONDITIONS = set(sample_csv['condition'].tolist())
 REPS = set(sample_csv['replicate'].tolist())
+gencode_reference = 'GRCh38.primary_assembly.genome' # prefix of genome fa filename
+
 
 rule all:
 	input:
 		(expand('results/{condition}_{rep}_tags', condition = CONDITIONS, rep = REPS)),
 		# expand('results/RUNX1_{rep}_peaks.txt', rep = REPS),
-		expand('results/RUNX1sample_{rep}_peaks.bed', rep = REPS),
+		# expand('results/RUNX1sample_{rep}_peaks.bed', rep = REPS),
 		# 'results/RUNX1_intersected_peaks.bed',
-		'results/RUNX1_intersected_peaks.filtered.bed',
-		'results/RUNX1_intersected_peaks_annotated.tsv'
+		# 'results/RUNX1_intersected_peaks.filtered.bed',
+		'results/RUNX1_intersected_peaks_annotated.tsv',
+		'results/motifs/homerMotifs.html'
 
 rule make_tag_dir:
 	input:
@@ -104,16 +107,33 @@ rule annotate_peaks:
 	shell:
 		'''
 		annotatePeaks.pl {input.bedfile} hg38 -gtf {input.gencode} > {output}
+		gzip {input.gencode}
 		'''
 
-#rule unzip_genome:
-#	input:
-#	output:
-#	shell:
+rule unzip_genome:
+	input:
+		'results/{fasta}.fa.gz'.format(fasta = gencode_reference)
+	output:
+		'results/{fasta}.fa'.format(fasta = gencode_reference)
+	shell:
+		'''
+		gunzip {input}
+		'''
 
-#rule motifs:
-#	input:
-#	output:
-#	conda:
-#		'envs/homer_env.yml'
-#	shell:
+rule motifs:
+	input:
+		bedfile = 'results/RUNX1_intersected_peaks.filtered.bed',
+		genome = 'results/{fasta}.fa'.format(fasta = gencode_reference)
+	output:
+		dir = directory('results/motifs/'),
+		html = 'results/motifs/homerMotifs.html'
+	params:
+		size = '-size 200'
+	conda:
+		'envs/homer_env.yml'
+	shell:
+		'''
+		mkdir -p {output}
+		findMotifsGenome.pl {input.bedfile} {input.genome} {output.dir} {params.size}
+		gzip {input.genome}
+		'''
