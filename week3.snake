@@ -133,7 +133,7 @@ rule motifs:
 		'envs/homer_env.yml'
 	shell:
 		'''
-		mkdir -p {output}
-		findMotifsGenome.pl {input.bedfile} {input.genome} {output.dir} {params.size}
+		mkdir -p {output.dir}
+		findMotifsGenome.pl {input} {output.dir} {params.size}
 		gzip {input.genome}
 		'''
