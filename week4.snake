@@ -7,16 +7,18 @@ gencode_reference = 'GRCh38.primary_assembly.genome' # prefix of genome fa filen
 
 rule all:
 	input:
-		matrix=expand('RUNX1{REP}_matrix.gz', REP=REPS)
+		matrix=expand('results/RUNX1sample_{REP}_matrix.gz', REP=REPS),
+		heatmap=expand('results/RUNX1sample_{REP}_matrix.png', REP=REPS)
 
 rule computeMatrix:
 	input:
 		genes_bed='results/hg38_genes.bed',
 		ip_bigwig='results/RUNX1sample_{rep}.bw'
 	output:
-		matrix='RUNX1{rep}_matrix.gz',
-		text='RUNX1{rep}_matrix.txt',
-		sorted_bed='RUNX1{rep}_sorted_regions.bed'
+		matrix='results/RUNX1sample_{rep}_matrix.gz',
+		text='results/RUNX1sample_{rep}_matrix.txt',
+		sorted_bed='results/RUNX1sample_{rep}_sorted_regions.bed'
+		# heatmap='results/RUNX1sample_{rep}_matrix.png'
 	params:
 		options='''
     --beforeRegionStartLength 2000 \
@@ -39,9 +41,14 @@ rule computeMatrix:
 
 rule plotMatrix:
 	input:
+		genes_bed='results/hg38_genes.bed',
+		matrix='results/RUNX1sample_{rep}_matrix.gz'
+		#bams='results/RUNX1sample_{rep}.sorted.bam'
 	output:
+		heatmap='results/RUNX1sample_{rep}_matrix.png'
 	conda:
 		'envs/deeptools_env.yml'
 	shell:
 		'''
+		plotProfile -m {input.matrix} -o {output.heatmap} --dpi=500
 		'''
