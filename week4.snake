@@ -7,16 +7,35 @@ gencode_reference = 'GRCh38.primary_assembly.genome' # prefix of genome fa filen
 
 rule all:
 	input:
-		
+		matrix=expand('RUNX1{REP}_matrix.gz', REP=REPS)
 
 rule computeMatrix:
 	input:
+		genes_bed='results/hg38_genes.bed',
+		ip_bigwig='results/RUNX1sample_{rep}.bw'
 	output:
+		matrix='RUNX1{rep}_matrix.gz',
+		text='RUNX1{rep}_matrix.txt',
+		sorted_bed='RUNX1{rep}_sorted_regions.bed'
 	params:
+		options='''
+    --beforeRegionStartLength 2000 \
+    --regionBodyLength 5000 \
+    --afterRegionEndLength 2000 \
+    --binSize 10'''
 	conda:
 		'envs/deeptools_env.yml'
 	threads: 4
 	shell:
+		'''
+		computeMatrix scale-regions \
+		-S {input.ip_bigwig} \
+		-R {input.genes_bed} \
+		{params.options} \
+		-o {output.matrix} \
+		--outFileNameMatrix {output.text} \
+		--outFileSortedRegions {output.sorted_bed}
+		'''
 
 rule plotMatrix:
 	input:
@@ -24,3 +43,5 @@ rule plotMatrix:
 	conda:
 		'envs/deeptools_env.yml'
 	shell:
+		'''
+		'''
