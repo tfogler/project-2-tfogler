@@ -20,10 +20,8 @@ rule computeMatrix:
 		sorted_bed='results/RUNX1sample_{rep}_sorted_regions.bed'
 		# heatmap='results/RUNX1sample_{rep}_matrix.png'
 	params:
-		options='''
-    --beforeRegionStartLength 2000 \
-    --regionBodyLength 5000 \
-    --afterRegionEndLength 2000 \
+		options='''--upstream 2000 \
+    --downstream 2000 \
     --binSize 10'''
 	conda:
 		'envs/deeptools_env.yml'

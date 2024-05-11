@@ -14,7 +14,7 @@ rule all:
 		# 'results/RUNX1_intersected_peaks.bed',
 		# 'results/RUNX1_intersected_peaks.filtered.bed',
 		'results/RUNX1_intersected_peaks_annotated.tsv',
-		'results/motifs/homerMotifs.html'
+		'results/motifs/homerResults.html'
 
 rule make_tag_dir:
 	input:
@@ -126,7 +126,7 @@ rule motifs:
 		genome = 'results/{fasta}.fa'.format(fasta = gencode_reference)
 	output:
 		dir = directory('results/motifs/'),
-		html = 'results/motifs/homerMotifs.html'
+		html = 'results/motifs/homerResults.html'
 	params:
 		size = '-size 200'
 	conda:

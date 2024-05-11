@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define num jobs to be submitted
-JOBS=5
+JOBS=2
 
 # List of directories or Snakefiles
 SNAKEFILES=(
@@ -16,7 +16,7 @@ QSUB_CMD="qsub -P bf528 -pe omp {threads}"
 # Iterate through each Snakefile and submit the Snakemake command as a qsub job
 for SNAKEFILE in "${SNAKEFILES[@]}"; do
     # Define the Snakemake command with the appropriate options for each Snakefile
-    SNAKEMAKE_COMMAND="snakemake -s $SNAKEFILE --sdm conda --executor cluster-generic --cluster-generic-submit-cmd \"$QSUB_CMD\" --jobs $JOBS"
+    SNAKEMAKE_COMMAND="snakemake -s $SNAKEFILE --sdm conda --executor cluster-generic --cluster-generic-submit-cmd \"$QSUB_CMD\" --jobs $JOBS --rerun-incomplete"
     
     # Submit the Snakemake command as a qsub job
     echo "Submitting job for Snakefile: $SNAKEFILE \
